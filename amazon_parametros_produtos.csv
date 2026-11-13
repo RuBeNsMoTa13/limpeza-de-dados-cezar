@@ -1,0 +1,17 @@
+produto,dias_analisados,total_pedidos,demanda_media_diaria,demanda_desvio_diario,tempo_medio_horas,tempo_desvio_horas,distancia_media_km
+Ar Livre e Camping,44,2747,62.43,6.61,2.2,0.73,10.02
+Brinquedos,44,2781,63.2,9.72,2.18,0.74,10.05
+Calçados,44,2666,60.59,10.85,2.21,0.72,10.11
+Casa e Decoração,44,2685,61.02,11.52,2.21,0.73,10.21
+Cosméticos,44,2677,60.84,8.63,2.23,0.73,10.15
+Cozinha,44,2673,60.75,10.31,2.23,0.73,10.05
+Cuidados com a Pele,44,2772,63.0,9.45,2.21,0.74,10.19
+Eletrônicos,44,2849,64.75,12.22,2.21,0.71,10.08
+Esportes,44,2719,61.8,9.33,2.23,0.7,10.12
+Joias,44,2802,63.68,10.35,2.2,0.73,10.13
+Lanches,44,2770,62.95,10.06,2.22,0.74,10.11
+Livros,44,2824,64.18,10.87,2.21,0.73,10.08
+Mercado (Perecíveis),44,2691,61.16,11.74,0.45,0.15,10.09
+Pet Shop,44,2690,61.14,9.4,2.21,0.72,10.12
+Roupas,44,2667,60.61,10.8,2.2,0.74,10.1
+Vestuário,44,2726,61.95,9.28,2.22,0.73,10.05

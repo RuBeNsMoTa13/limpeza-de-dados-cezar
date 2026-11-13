@@ -1,0 +1,45 @@
+ESTUDO DE CASO PRÁTICO: ANÁLISE DE DADOS PRESCRITIVA (AMAZON DELIVERY DATASET)
+
+1. APRESENTAÇÃO DA BASE DE DADOS
+O estudo de caso utiliza a base de dados oficial Amazon Delivery Dataset (disponível na plataforma Kaggle), composta por 43.739 registros reais de entregas realizadas ao longo de 44 dias consecutivos (entre 11 de fevereiro de 2022 e 06 de abril de 2022), abrangendo 16 categorias de produtos (Eletrônicos, Livros, Joias, Brinquedos, Cuidados com a Pele, Lanches, Ar Livre e Camping, Vestuário, Esportes, Mercado/Perecíveis, Pet Shop, Casa e Decoração, Cosméticos, Cozinha, Roupas e Calçados).
+
+Para cada entrega registrada, a base informa: o código do pedido, a data e o horário da compra, o horário de coleta na loja, a categoria do produto, a região de atendimento (Urbana, Metropolitana, Semiurbana ou Outra), a condição climática (Ensolarado, Tempestade, Nublado, Neblina, Ventania ou Tempestade de Areia), o nível de trânsito (Livre, Médio, Alto ou Engarrafamento), o tipo de veículo (Moto, Scooter, Van ou Bicicleta), a idade e a avaliação do entregador, as coordenadas geográficas (latitude e longitude da loja e do cliente) e o tempo total de entrega em minutos.
+
+
+2. ETAPA 1: TRATAMENTO E LIMPEZA DOS DADOS
+O arquivo original apresentava inconsistências de formatação e preenchimento que precisaram ser tratadas em Python (biblioteca Pandas) antes da modelagem matemática, garantindo a preservação integral dos 43.739 registros (zero perda de dados):
+
+a) Padronização textual e remoção de espaços ocultos: No arquivo bruto, valores das colunas de clima, trânsito, veículo e região continham espaços em branco no final das palavras (por exemplo, "Sunny " e "Jam "), além de erro de grafia em "Metropolitian". Todos os textos foram higienizados e padronizados.
+
+b) Tratamento de valores ausentes: Foram identificados 91 registros em que as variáveis de clima, trânsito e horário do pedido vieram preenchidas com a palavra "NaN", além de 54 registros sem nota de avaliação do entregador. Para não descartar esses pedidos nem distorcer a contagem total de vendas diárias, os textos "NaN" foram convertidos e classificados como "Não Informado" nas variáveis categóricas, enquanto as 54 avaliações ausentes foram preenchidas com a mediana da base (nota 4,7).
+
+c) Correção de coordenadas geográficas e cálculo da distância em quilômetros: Em 188 registros, a latitude da loja apresentava sinal negativo por erro de digitação, embora o endereço de entrega estivesse na mesma cidade (Índia, Hemisfério Norte). Aplicou-se o valor absoluto nas coordenadas e calculou-se a distância real em quilômetros entre a loja e o cliente pela fórmula de Haversine (distância média de 10,1 km).
+
+d) Conversão de unidades e tradução das variáveis: O tempo de entrega original (em minutos) foi convertido também para horas e dias. Além disso, todas as variáveis e categorias foram disponibilizadas tanto na versão traduzida para Português (PT-BR) quanto na versão original em Inglês, gerando três tabelas finais prontas para os cálculos:
+- Tabela 1 (amazon_pedidos_limpo.csv): Base completa com as 43.739 entregas tratadas.
+- Tabela 2 (amazon_estoque_diario.csv): Base agregada por dia e por categoria de produto (704 linhas, correspondentes a 44 dias multiplicados pelas 16 categorias), contendo a demanda diária e o tempo médio de entrega.
+- Tabela 3 (amazon_parametros_produtos.csv): Tabela consolidada das 16 categorias de produtos com o total de pedidos, a demanda média diária, o desvio padrão da demanda, o tempo médio de entrega em horas e a distância média em quilômetros.
+
+
+3. ETAPA 2: MODELAGEM MATEMÁTICA, REGRESSÃO LINEAR E DIAGRAMAS DE DISPERSÃO
+Com as tabelas tratadas, foram construídos os modelos matemáticos e estatísticos para apoiar a tomada de decisão logística e de estoque:
+
+a) Equações de Regressão Linear e Diagramas de Dispersão:
+Utilizou-se a regressão linear simples (equação da reta y = a.x + b) sobre os diagramas de dispersão em duas análises:
+- Variação da Demanda Diária ao longo do Tempo: A variável x representa o dia de operação (de 1 a 44) e a variável y representa a quantidade de pedidos do produto no dia. A reta de regressão permite visualizar a tendência de crescimento, estabilidade ou queda nas vendas diárias de cada categoria.
+- Tempo de Entrega em função da Distância: A variável x representa a distância em quilômetros entre a loja e o cliente, e a variável y representa o tempo de entrega em minutos. O coeficiente angular (a) da equação mostra quantos minutos extras são adicionados à entrega para cada quilômetro adicional de distância.
+
+b) Análise de Sensibilidade (Impacto do Clima e do Trânsito):
+A análise de sensibilidade avalia como variações nas condições externas alteram o tempo médio de entrega. Nos dados analisados, enquanto o tempo médio em trânsito livre é de aproximadamente 101 minutos, em cenários de engarrafamento esse tempo sobe para 148 minutos (um aumento de 47 minutos por entrega). Da mesma forma, condições de tempo ensolarado apresentam média de 104 minutos, subindo para cerca de 138 minutos sob neblina ou tempo nublado.
+
+c) Modelo de Decisão para Ponto de Reposição de Estoque e Otimização de Frota:
+- Otimização do Veículo: A partir do cruzamento das médias de tempo de entrega por cenário, o modelo identifica qual veículo apresenta o menor tempo de resposta em cada condição (por exemplo, em cenários de engarrafamento, vans e scooters apresentam tempo médio de 134 a 137 minutos, contra 155 minutos das motos).
+- Cálculo do Ponto de Reposição de Estoque: Para evitar a falta de produtos, o ponto de pedido é calculado multiplicando-se a demanda média diária do produto pelo tempo de reposição em dias (estoque básico), somado a uma reserva de segurança percentual ajustada pelo fator de atraso do cenário climático e de trânsito.
+
+
+4. ETAPA 3: PAINEL INTERATIVO NO STREAMLIT E SIMULAÇÃO
+Os dados tratados na Etapa 1 e as equações construídas na Etapa 2 foram integrados em uma aplicação interativa desenvolvida em Python com a biblioteca Streamlit (arquivo app.py). O painel permite ao usuário:
+- Alternar o idioma das variáveis e tabelas entre Português (PT-BR) e Inglês (Original);
+- Selecionar qualquer uma das 16 categorias de produtos e simular diferentes cenários de Clima, Trânsito, Tempo de Reposição e Reserva de Segurança;
+- Visualizar as tabelas tratadas, as equações de regressão linear, os diagramas de dispersão, os gráficos de sensibilidade e a simulação visual do comportamento do estoque ao longo dos 44 dias de operação.
+
